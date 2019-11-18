@@ -103,9 +103,9 @@ export default {
             console.log(JSON.stringify(res))
             const data = res.data
             if (null != data.result.manager.headPic) {
-              commit('setAvator', 'http://localhost:8081/picture/'+data.result.manager.headPic)
+              commit('setAvator', 'http://localhost:8080/picture/'+data.result.manager.headPic)
             }else {
-              commit('setAvator', 'http://localhost:8081/picture/'+'1.png')
+              commit('setAvator', 'http://localhost:8080/picture/'+'1.png')
             }
             
             commit('setUserName', data.result.manager.username)

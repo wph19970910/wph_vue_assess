@@ -45,7 +45,7 @@
         </Col>
         <Col span="12" class="text-right">
           <component2 v-if="Super">
-            <Button type="primary" @click='addItem'class="mr-10">新建</Button>
+            <Button type="primary" @click='addItem' class="mr-10">新建</Button>
             <Button type="error" @click="myDelete">删除</Button>
           </component2>
         </Col>

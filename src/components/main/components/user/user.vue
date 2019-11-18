@@ -392,15 +392,15 @@ export default {
     }
   },
   mounted () {
-    selectNewsCount().then(res => {
-      if(res.data.success){
-        this.count = res.data.result.count;
-      }else if(res.data.errorMsg){
-        this.$Message.warning({
-          content:res.data.errorMsg
-        })
-      }
-    })
+    // selectNewsCount().then(res => {
+    //   if(res.data.success){
+    //     this.count = res.data.result.count;
+    //   }else if(res.data.errorMsg){
+    //     this.$Message.warning({
+    //       content:res.data.errorMsg
+    //     })
+    //   }
+    // })
   },
   computed: { 
       access () {

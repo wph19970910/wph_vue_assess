@@ -7,7 +7,69 @@ export const getTableData = () => {
     method: 'get'
   })
 }
-
+// 获取用户信息
+export const getUser = (pageSize, currentPage, username) => {
+  const data=qs.stringify({
+    pageSize,
+    currentPage,
+    username
+  })
+  console.log(data);
+  return axios.request({
+    url: '/user/tablist',
+    data,
+    method: 'post'
+  })
+}
+// 根据id查询用户
+export const getUserById = (id) => {
+  const data=qs.stringify({id})
+  return axios.request({
+    url: '/user/userInfo',
+    data,
+    method: 'post'
+  })
+}
+// 编辑用户
+export const updateUser=(formData) => {
+  const data={
+    username: formData.username,
+    name: formData.name,
+    type: formData.type,
+    state: formData.state,
+    id: formData.id
+  }
+  console.log(data);
+  return axios.request({
+    url: '/user/update',
+    data,
+    method: 'post'
+  })
+}
+// 删除用户
+export const deleteUser= (id,state) => {
+  const data=qs.stringify({id,state})
+  return axios.request({
+    url: '/user/delete',
+    data,
+    method: 'post'
+  })
+}
+// 添加用户
+export const addUser=(formData)=>{
+  const data = {
+    name:formData.name,
+    username:formData.username,
+    type:formData.type,
+    state:formData.state
+  }
+   console.log(data)
+  return axios.request({
+    url: '/user/add',
+    data,
+    method: 'post'
+  })
+}
 //注册
 export const regist =(formData)=> {
   console.log(JSON.stringify(formData))
@@ -596,14 +658,14 @@ export const updateCourse = (formData,targetKeys) => {
 }
 
 //查询消息数量
-export const selectNewsCount = () => {
+// export const selectNewsCount = () => {
  
-  return axios.request({
-    url: '/news/selectNewsCount',
-    //data,
-    method: 'post'
-  })
-}
+//   return axios.request({
+//     url: '/news/selectNewsCount',
+//     //data,
+//     method: 'post'
+//   })
+// }
 
 export const newsTableData = (pageSize, currentPage,startTime,endTime) => {
   //alert(2)
@@ -620,17 +682,6 @@ export const newsTableData = (pageSize, currentPage,startTime,endTime) => {
     method: 'post'
   })
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 export const getDragList = () => {

@@ -47,7 +47,7 @@ module.exports = {
       { // 匹配代理的url
         '/api':
           {
-            target: 'http://192.168.0.100:8080',
+            target: 'http://192.168.0.177:8080',
             // target: 'http://119.23.31.181:8080/gbq-api/',
             // target: 'http://103.248.102.7:8080/i9-fingerlock-api/',
             pathRewrite: {'^/api': '/'},

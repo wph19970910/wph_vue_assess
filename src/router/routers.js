@@ -247,6 +247,22 @@ export default [
       }
     ]
   },
+  {
+    path: '/user',
+    name: 'user',
+    component: Main,
+    children: [
+      {
+        path: 'user',
+        name: '用户管理',
+        meta: {
+          icon: 'md-contact',
+          title: '用户管理'
+        },
+        component: () => import('@/myView/user/user.vue')
+      }
+    ]
+  },
   //   path: '',
   //   name: 'doc',
   //   meta: {
