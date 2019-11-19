@@ -42,38 +42,42 @@
       />
     </Card>
     <!-- 编辑用户表单 -->
-    <Modal style="width:50%;" :value="editModal" title="编辑用户" @on-ok="edit" @on-cancel="cancel">
-      <Form :model="editUserInfo" :label-width="80">
-        <FormItem label="用户名">
+    <Modal style="width:50%;" :value="editModal" title="编辑用户" footer-hide>
+      <Form ref="editUserInfo" :model="editUserInfo" :rules="editUserInfoRules" :label-width="80">
+        <FormItem label="用户名" prop="username">
           <Input v-model="editUserInfo.username" placeholder="请输入用户名"></Input>
         </FormItem>
-        <FormItem label="索引">
+        <FormItem label="索引" prop="name">
           <Input v-model="editUserInfo.name" placeholder="请输入索引"></Input>
         </FormItem>
-        <FormItem label="类型">
+        <FormItem label="类型" prop="type">
           <Input v-model="editUserInfo.type" placeholder="请输入类型:老师(1)学生(0)"></Input>
         </FormItem>
-        <FormItem label="状态">
+        <FormItem label="状态" prop="state">
           <Input v-model="editUserInfo.state" placeholder="请输入状态:已删除(1)已启用(0)"></Input>
         </FormItem>
       </Form>
+      <Button @click="cancel">取消</Button>
+      <Button type="primary" @click="edit">确定</Button>
     </Modal>
     <!-- 添加用户表单 -->
-    <Modal style="width:50%;" :value="addModal" title="编辑用户" @on-ok="add" @on-cancel="addCancel">
-      <Form :model="addUserInfo" :label-width="80">
-        <FormItem label="用户名">
+    <Modal style="width:50%;" :value="addModal" title="添加用户" footer-hide>
+      <Form ref="addUserInfo" :model="addUserInfo" :rules="addUserInfoRules" :label-width="80">
+        <FormItem label="用户名" prop="username">
           <Input v-model="addUserInfo.username" placeholder="请输入用户名"></Input>
         </FormItem>
-        <FormItem label="索引">
+        <FormItem label="索引" prop="name">
           <Input v-model="addUserInfo.name" placeholder="请输入索引"></Input>
         </FormItem>
-        <FormItem label="类型">
+        <FormItem label="类型" prop="type">
           <Input v-model="addUserInfo.type" placeholder="请输入类型:老师(1)学生(0)"></Input>
         </FormItem>
-        <FormItem label="状态">
+        <FormItem label="状态" prop="state">
           <Input v-model="addUserInfo.state" placeholder="请输入状态:已删除(1)已启用(0)"></Input>
         </FormItem>
       </Form>
+      <Button @click="addCancel">取消</Button>
+      <Button type="primary" @click="add">确定</Button>
     </Modal>
   </div>
 </template>
@@ -118,18 +122,35 @@ export default {
       data1: [],
       pageSize: 10,
       currentPage: 1,
-      username: "",
       total: 0,
       // 编辑用户对话框
       editModal: false,
       // 编辑用户信息
       editUserInfo: {},
+      // 编辑用户校验规则
+      editUserInfoRules: {
+        username: [
+          { required: true, message: "用户名不能为空", trigger: "blur" }
+        ],
+        name: [{ required: true, message: "索引不能为空", trigger: "blur" }],
+        type: [{ required: true, message: "类型不能为空", trigger: "blur" }],
+        state: [{ required: true, message: "状态不能为空", trigger: "blur" }]
+      },
       // 模糊查询
       username: "",
       // 添加用户对话框
       addModal: false,
       // 添加用户信息
-      addUserInfo: {}
+      addUserInfo: {},
+      // 添加用户校验规则
+      addUserInfoRules: {
+        username: [
+          { required: true, message: "用户名不能为空", trigger: "blur" }
+        ],
+        name: [{ required: true, message: "索引不能为空", trigger: "blur" }],
+        type: [{ required: true, message: "类型不能为空", trigger: "blur" }],
+        state: [{ required: true, message: "状态不能为空", trigger: "blur" }]
+      }
     };
   },
   methods: {
@@ -158,28 +179,35 @@ export default {
       this.editModal = true;
       getUserById(id).then(res => {
         this.editUserInfo = res.data.result.data;
+        this.editUserInfo.type = this.editUserInfo.type + "";
+        this.editUserInfo.state = this.editUserInfo.state + "";
       });
     },
     // 用户对话框点击确定
     edit() {
-      updateUser(this.editUserInfo).then(res => {
-        if (res.status !== 200) {
-          this.$Message.error("修改失败");
-        } else {
-          getUser(this.pageSize, this.currentPage, this.username).then(res => {
-            this.pageSize = res.data.result.data.pageSize;
-            this.total = res.data.result.data.totalSize;            
-            let temp = this.total % this.pageSize == 0 ?  this.currentPage -1 : this.currentPage;
-            this.userInit(this.pageSize, temp, this.username);
-          });
-          this.$Message.success("修改成功");
-        }
+      this.$refs.editUserInfo.validate(valid => {
+        console.log(valid);
+        if(!valid) return
+        updateUser(this.editUserInfo).then(res => {
+          if (res.status !== 200) {
+            this.$Message.error("修改失败");
+          } else {
+            getUser(this.pageSize, this.currentPage, this.username).then(res => {
+              this.pageSize = res.data.result.data.pageSize;
+              this.total = res.data.result.data.totalSize;
+              let temp = this.total % this.pageSize == 0 ?  this.currentPage -1 : this.currentPage;
+              this.userInit(this.pageSize, temp, this.username);
+            });
+            this.$Message.success("修改成功");
+          }
+        });
+        this.editModal = false;
       });
-      this.editModal = false;
     },
     // 用户对话框点击取消
     cancel() {
       this.editModal = false;
+      this.$refs.editUserInfo.resetFields();
     },
     // 删除用户
     // removeUser(id) {
@@ -216,20 +244,24 @@ export default {
     },
     // 添加用户对话框确定
     add() {
-      addUser(this.addUserInfo).then(res => {
-        if (res.status !== 200) {
-          this.$Message.error("添加失败");
-        } else {
-          this.$Message.success("添加成功");
-          this.userInit(this.pageSize, this.currentPage, this.username);
-        }
+      this.$refs.addUserInfo.validate(valid => {
+        if (!valid) return;
+        addUser(this.addUserInfo).then(res => {
+          if (res.status !== 200) {
+            this.$Message.error("添加失败");
+          } else {
+            this.$Message.success("添加成功");
+            this.userInit(this.pageSize, this.currentPage, this.username);
+          }
+        });
+        this.addModal = false;
+        this.addUserInfo = {};
       });
-      this.addModal = false;
-      this.addUserInfo = {};
     },
     // 添加用户对话框取消
     addCancel() {
       this.addModal = false;
+      this.$refs.addUserInfo.resetFields();
       this.addUserInfo = {};
     }
   },
